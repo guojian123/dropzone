@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>bootstrap-dropzone</title>
+
+    <link rel="stylesheet" href="./static/css/bootstrap.css" />
+    <link rel="stylesheet" href="./static/css/bootstrap-theme.css" />
+    <link rel="stylesheet" href="./static/css/dropzone.css" />
+    <script type="text/javascript" src="./static/js/jquery.js"></script>
+    <script type="text/javascript" src="./static/js/bootstrap.js"></script>
+    <script type="text/javascript" src="./static/js/dropzone.js"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <section>
+            <!-- Page content-->
+            <div class="content-wrapper">
+
+                <div class="panel panel-default">
+                    <!-- /#portlet-header -->
+                    <div class="panel-body">
+                        <div class="row m-t-30">
+                            <div id="dropzone" class="col-sm-12">
+                                <form action="1.php" class="dropzone" id="my-awesome-dropzone">
+                                    <div class="dz-message fallback">
+                                        <input name="file" type="file" multiple style="display: none;" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script>
+        $(function(){
+            init_events();
+        })
+        function init_events() {
+             $(".dropzone").dropzone({
+                 url: "/1.php",
+                 method:'post',
+                 maxFiles: 20,//默认为null，可以指定一个数值，限制最多文件数量
+                 maxFilesize: 2,//最大文件大小，单位是MB
+                 paramName:"upload_file",
+                 acceptedFiles: ".jpg,.gif,.png",//可以上传文件类型
+    //             uploadMultiple:false, //一次性上传多个文件
+                 addRemoveLinks:true,
+                 dictDefaultMessage: "点击上传，或者将文件拖放到该区域上传",
+                 //dictInvalidInputType: "不被接受的文件类型",
+                 maxThumbnailFilesize:2,
+                 dictFileTooBig: "文件太大，请处理后上传",
+                 dictCancelUpload: "取 消",
+                 dictRemoveFile: "删 除",
+                 //dictCancelUploadConfirmation: "是否取消上传该文件？",
+                 dictRemoveFileConfirmation: "是否删除该文件？",
+                 //dictMaxFilesExceeded: "上传的图片数量已达上限，你最多能上传{{maxFiles}}个文件",
+                 //dictResponseError: "上传图片失败！"
+                 fallback: function () {
+                     alert('你的浏览器不支持文件上传控件');
+                 },
+                 removedfile:function(f){
+                     var obj = $(f.previewTemplate).find('.dz-remove'), id = obj.data('id');
+                     if (id){
+                         $.post('/yan/ads/pics/1/pics-ajax', {action:'delete', id:id},function(json){
+                             json = JSON.parse(json);
+                             if (json.status == 200){
+                                 $(f.previewTemplate).remove();
+                                 return true;
+                             }
+                             layer.msg(json.message);
+                             return false;
+                         })
+                     }
+                 },
+                 success:function(f, json){
+                     json = JSON.parse(json);
+                     if (json.status == 200){
+                         $(f.previewTemplate).find('.dz-remove').data('id', json.data['id']);
+                         return true;
+                     }
+                     return false;
+                 }
+             });
+        };
+    </script>
+    </div>
+</body>
+
+</html>
+
