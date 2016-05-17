@@ -1,0 +1,1 @@
+This is a demo of Dropzone.js.To achieve your project,you can change the configurations what you need.
